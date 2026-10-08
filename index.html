@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StudyFlow – Daily Study Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- ─── Sidebar Navigation ─── -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <span class="logo-icon">📚</span>
+        <span class="logo-text">StudyFlow</span>
+      </div>
+      <button class="sidebar-close" id="sidebarClose" aria-label="Close menu">✕</button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-item active" data-section="dashboard">
+        <span class="nav-icon">⊞</span><span>Dashboard</span>
+      </a>
+      <a href="#" class="nav-item" data-section="planner">
+        <span class="nav-icon">📋</span><span>Task Planner</span>
+      </a>
+      <a href="#" class="nav-item" data-section="timeline">
+        <span class="nav-icon">⏱</span><span>Timeline</span>
+      </a>
+      <a href="#" class="nav-item" data-section="weekly">
+        <span class="nav-icon">📈</span><span>Weekly Progress</span>
+      </a>
+      <a href="#" class="nav-item" data-section="stats">
+        <span class="nav-icon">📊</span><span>Statistics</span>
+      </a>
+      <a href="#" class="nav-item" data-section="focus">
+        <span class="nav-icon">🎯</span><span>Focus Mode</span>
+      </a>
+      <a href="#" class="nav-item" data-section="review">
+        <span class="nav-icon">🏆</span><span>Weekly Review</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="streak-badge" id="sidebarStreak">
+        <span class="streak-flame">🔥</span>
+        <span id="streakCountSidebar">0</span>
+        <span> day streak</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ─── Overlay ─── -->
+  <div class="overlay" id="overlay"></div>
+
+  <!-- ─── Main Layout ─── -->
+  <div class="app-shell">
+    <!-- Top Bar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-btn" id="menuBtn" aria-label="Open menu">☰</button>
+        <div class="topbar-brand">
+          <span class="logo-icon">📚</span>
+          <span class="logo-text">StudyFlow</span>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">🌙</button>
+        <button class="btn btn-primary btn-sm" id="addTaskBtn">+ Add Task</button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+      <!-- ══════════════ DASHBOARD SECTION ══════════════ -->
+      <section class="section active" id="section-dashboard">
+        <!-- Motivation Banner -->
+        <div class="motivation-banner">
+          <p class="motivation-tag">BUILD YOURSELF. ONE DAY AT A TIME.</p>
+          <blockquote class="motivation-quote">
+            "Don't be lazy. Work hard because you have more potential than you thought. Stay busy, keep learning, and work on yourself every single day."
+          </blockquote>
+        </div>
+
+        <!-- Date & Streak Row -->
+        <div class="dashboard-header-row">
+          <div>
+            <h1 class="page-title" id="todayTitle">Wednesday, October 07</h1>
+            <p class="page-subtitle" id="todaySubtitle">Let's make today count.</p>
+          </div>
+          <div class="streak-display" id="streakDisplay">
+            <span class="streak-emoji">🔥</span>
+            <div class="streak-info">
+              <span class="streak-number" id="streakNumber">0</span>
+              <span class="streak-label">Day Streak</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Daily Goal Bar -->
+        <div class="daily-goal-card" id="dailyGoalCard">
+          <div class="goal-header">
+            <div>
+              <span class="goal-label">Daily Goal</span>
+              <span class="goal-target" id="goalTarget">80%</span>
+            </div>
+            <button class="btn btn-ghost btn-xs" id="editGoalBtn">Edit Goal</button>
+          </div>
+          <div class="goal-achievement" id="goalAchievement">
+            <span class="goal-percent" id="goalPercent">0%</span>
+            <span class="goal-status" id="goalStatus">Add tasks to get started.</span>
+          </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+          <div class="stat-card accent-blue">
+            <div class="stat-icon">📋</div>
+            <div class="stat-body">
+              <span class="stat-value" id="statTotalTasks">0</span>
+              <span class="stat-label">Tasks Planned</span>
+            </div>
+          </div>
+          <div class="stat-card accent-green">
+            <div class="stat-icon">✅</div>
+            <div class="stat-body">
+              <span class="stat-value" id="statCompleted">0</span>
+              <span class="stat-label">Completed</span>
+            </div>
+          </div>
+          <div class="stat-card accent-orange">
+            <div class="stat-icon">⏳</div>
+            <div class="stat-body">
+              <span class="stat-value" id="statRemaining">0</span>
+              <span class="stat-label">Remaining</span>
+            </div>
+          </div>
+          <div class="stat-card accent-purple">
+            <div class="stat-icon">🕐</div>
+            <div class="stat-body">
+              <span class="stat-value" id="statHoursPlanned">0h 0m</span>
+              <span class="stat-label">Hours Planned</span>
+            </div>
+          </div>
+          <div class="stat-card accent-teal">
+            <div class="stat-icon">⚡</div>
+            <div class="stat-body">
+              <span class="stat-value" id="statHoursDone">0h 0m</span>
+              <span class="stat-label">Hours Completed</span>
+            </div>
+          </div>
+          <div class="stat-card accent-pink">
+            <div class="stat-icon">📅</div>
+            <div class="stat-body">
+              <span class="stat-value" id="statWeeklyAvg">0%</span>
+              <span class="stat-label">Weekly Average</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Progress Bar Card -->
+        <div class="card progress-card">
+          <div class="progress-card-header">
+            <span class="progress-card-title">Today's Progress</span>
+            <span class="progress-pct-badge" id="progressPctBadge">0%</span>
+          </div>
+          <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" id="progressTrack">
+            <div class="progress-fill" id="progressFill" style="width:0%"></div>
+          </div>
+          <div class="progress-detail">
+            <span id="progressDetail">Tasks: 0 / 0 completed</span>
+            <span id="progressTimeDetail">Study Time: 0h 0m / 0h 0m</span>
+          </div>
+        </div>
+
+        <!-- Today's Tasks Quick View -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Today's Tasks</span>
+            <button class="btn btn-ghost btn-xs" data-section="planner" id="viewAllTasks">View All →</button>
+          </div>
+          <div id="dashboardTaskList" class="task-list-compact">
+            <div class="empty-state">
+              <span class="empty-icon">🌱</span>
+              <p>No tasks yet. Add your first task and start building your day.</p>
+              <button class="btn btn-primary btn-sm" id="dashAddTaskBtn">+ Add Task</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════ TASK PLANNER SECTION ══════════════ -->
+      <section class="section" id="section-planner">
+        <div class="section-header">
+          <h2 class="section-title">Task Planner</h2>
+          <button class="btn btn-primary" id="plannerAddBtn">+ Add Task</button>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="pending">Pending</button>
+          <button class="filter-btn" data-filter="completed">Completed</button>
+          <button class="filter-btn" data-filter="high">High</button>
+          <button class="filter-btn" data-filter="medium">Medium</button>
+          <button class="filter-btn" data-filter="low">Low</button>
+        </div>
+
+        <div id="taskList" class="task-list">
+          <div class="empty-state">
+            <span class="empty-icon">📋</span>
+            <p>No tasks yet. Add your first task and start building your day.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════ TIMELINE SECTION ══════════════ -->
+      <section class="section" id="section-timeline">
+        <div class="section-header">
+          <h2 class="section-title">Daily Timeline</h2>
+          <span class="section-date" id="timelineDate"></span>
+        </div>
+        <div id="timelineView" class="timeline-container">
+          <div class="empty-state">
+            <span class="empty-icon">⏱</span>
+            <p>Add tasks with start and end times to see your daily timeline.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════ WEEKLY PROGRESS SECTION ══════════════ -->
+      <section class="section" id="section-weekly">
+        <div class="section-header">
+          <h2 class="section-title">Weekly Progress</h2>
+        </div>
+
+        <div class="weekly-summary-row">
+          <div class="mini-stat-card">
+            <span class="mini-stat-value" id="weeklyAvgStat">0%</span>
+            <span class="mini-stat-label">Weekly Average</span>
+          </div>
+          <div class="mini-stat-card">
+            <span class="mini-stat-value" id="bestDayStat">—</span>
+            <span class="mini-stat-label">Best Day</span>
+          </div>
+          <div class="mini-stat-card">
+            <span class="mini-stat-value" id="weeklyTasksStat">0 / 0</span>
+            <span class="mini-stat-label">Tasks Completed</span>
+          </div>
+        </div>
+
+        <div class="card chart-card">
+          <div class="chart-wrapper">
+            <canvas id="weeklyChart" role="img" aria-label="Weekly completion bar chart"></canvas>
+          </div>
+        </div>
+
+        <div class="day-breakdown" id="dayBreakdown"></div>
+      </section>
+
+      <!-- ══════════════ STATISTICS SECTION ══════════════ -->
+      <section class="section" id="section-stats">
+        <div class="section-header">
+          <h2 class="section-title">Study Statistics</h2>
+        </div>
+
+        <div class="stats-detailed-grid">
+          <div class="stat-detail-card">
+            <div class="stat-detail-icon">📅</div>
+            <div class="stat-detail-label">Daily Completion Rate</div>
+            <div class="stat-detail-value" id="sdDailyRate">0%</div>
+          </div>
+          <div class="stat-detail-card">
+            <div class="stat-detail-icon">📈</div>
+            <div class="stat-detail-label">Weekly Completion Rate</div>
+            <div class="stat-detail-value" id="sdWeeklyRate">0%</div>
+          </div>
+          <div class="stat-detail-card">
+            <div class="stat-detail-icon">⏰</div>
+            <div class="stat-detail-label">Total Study Hours</div>
+            <div class="stat-detail-value" id="sdTotalHours">0h 0m</div>
+          </div>
+          <div class="stat-detail-card">
+            <div class="stat-detail-icon">✅</div>
+            <div class="stat-detail-label">Tasks Completed</div>
+            <div class="stat-detail-value" id="sdTasksDone">0</div>
+          </div>
+          <div class="stat-detail-card">
+            <div class="stat-detail-icon">❌</div>
+            <div class="stat-detail-label">Tasks Missed</div>
+            <div class="stat-detail-value" id="sdTasksMissed">0</div>
+          </div>
+          <div class="stat-detail-card">
+            <div class="stat-detail-icon">🏆</div>
+            <div class="stat-detail-label">Most Productive Day</div>
+            <div class="stat-detail-value" id="sdBestDay">—</div>
+          </div>
+          <div class="stat-detail-card">
+            <div class="stat-detail-icon">🔥</div>
+            <div class="stat-detail-label">Consistency Streak</div>
+            <div class="stat-detail-value" id="sdStreak">0 days</div>
+          </div>
+          <div class="stat-detail-card">
+            <div class="stat-detail-icon">🎯</div>
+            <div class="stat-detail-label">Goals Met This Week</div>
+            <div class="stat-detail-value" id="sdGoalsMet">0 / 7</div>
+          </div>
+        </div>
+
+        <div class="card chart-card" style="margin-top:1.5rem">
+          <div class="card-header"><span class="card-title">Daily Completion Trend</span></div>
+          <div class="chart-wrapper">
+            <canvas id="trendChart" role="img" aria-label="Daily completion trend line chart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════ FOCUS MODE SECTION ══════════════ -->
+      <section class="section" id="section-focus">
+        <div class="section-header">
+          <h2 class="section-title">Focus Mode</h2>
+        </div>
+
+        <div class="focus-container">
+          <div class="card focus-card">
+            <!-- Task Selector -->
+            <div class="focus-selector" id="focusSelector">
+              <h3 class="focus-heading">Select a task to focus on</h3>
+              <div id="focusTaskList" class="focus-task-options">
+                <p class="text-muted">Add tasks first to use Focus Mode.</p>
+              </div>
+            </div>
+
+            <!-- Timer Display -->
+            <div class="focus-timer" id="focusTimer" style="display:none">
+              <div class="focus-task-name" id="focusTaskName">—</div>
+              <div class="focus-subject-name" id="focusSubjectName"></div>
+
+              <div class="timer-ring-wrapper">
+                <svg class="timer-ring" viewBox="0 0 200 200" aria-hidden="true">
+                  <circle class="timer-ring-bg" cx="100" cy="100" r="88" />
+                  <circle class="timer-ring-progress" id="timerRingProgress" cx="100" cy="100" r="88"
+                    stroke-dasharray="552.9" stroke-dashoffset="0" />
+                </svg>
+                <div class="timer-digits" id="timerDigits">25:00</div>
+              </div>
+
+              <div class="timer-controls">
+                <button class="btn btn-primary btn-lg" id="focusStartBtn">▶ Start</button>
+                <button class="btn btn-ghost btn-lg" id="focusPauseBtn" style="display:none">⏸ Pause</button>
+                <button class="btn btn-success btn-lg" id="focusFinishBtn">✓ Done</button>
+                <button class="btn btn-ghost btn-sm" id="focusCancelBtn">← Back</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Focus Stats -->
+          <div class="focus-stats-row">
+            <div class="mini-stat-card">
+              <span class="mini-stat-value" id="focusSessionsToday">0</span>
+              <span class="mini-stat-label">Sessions Today</span>
+            </div>
+            <div class="mini-stat-card">
+              <span class="mini-stat-value" id="focusTimeToday">0m</span>
+              <span class="mini-stat-label">Focus Time Today</span>
+            </div>
+            <div class="mini-stat-card">
+              <span class="mini-stat-value" id="focusTasksDone">0</span>
+              <span class="mini-stat-label">Tasks Completed</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════ WEEKLY REVIEW SECTION ══════════════ -->
+      <section class="section" id="section-review">
+        <div class="section-header">
+          <h2 class="section-title">Weekly Review</h2>
+          <span class="section-date" id="reviewWeekRange"></span>
+        </div>
+
+        <div class="review-card">
+          <div class="review-title">WEEKLY REVIEW</div>
+
+          <div class="review-stats-grid">
+            <div class="review-stat">
+              <span class="review-stat-value" id="revTasksPlanned">0</span>
+              <span class="review-stat-label">Tasks Planned</span>
+            </div>
+            <div class="review-stat">
+              <span class="review-stat-value" id="revTasksDone">0</span>
+              <span class="review-stat-label">Tasks Completed</span>
+            </div>
+            <div class="review-stat">
+              <span class="review-stat-value" id="revRate">0%</span>
+              <span class="review-stat-label">Completion Rate</span>
+            </div>
+            <div class="review-stat">
+              <span class="review-stat-value" id="revHours">0h</span>
+              <span class="review-stat-label">Study Hours</span>
+            </div>
+            <div class="review-stat">
+              <span class="review-stat-value" id="revBestDay">—</span>
+              <span class="review-stat-label">Best Day</span>
+            </div>
+            <div class="review-stat">
+              <span class="review-stat-value" id="revStreak">0</span>
+              <span class="review-stat-label">Streak (days)</span>
+            </div>
+          </div>
+
+          <div class="review-message" id="reviewMessage">Complete some tasks to see your weekly review.</div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ─── Add / Edit Task Modal ─── -->
+  <div class="modal-overlay" id="taskModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modalTitle">Add Task</h2>
+        <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
+      </div>
+      <form class="modal-body" id="taskForm" novalidate>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="taskName">Task Name *</label>
+            <input class="form-input" type="text" id="taskName" placeholder="e.g. Python Practice" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="taskSubject">Subject / Category</label>
+            <input class="form-input" type="text" id="taskSubject" placeholder="e.g. Programming" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="taskStart">Start Time *</label>
+            <input class="form-input" type="time" id="taskStart" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="taskEnd">End Time *</label>
+            <input class="form-input" type="time" id="taskEnd" required />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="taskPriority">Priority</label>
+            <select class="form-input" id="taskPriority">
+              <option value="high">🔴 High</option>
+              <option value="medium" selected>🟡 Medium</option>
+              <option value="low">🟢 Low</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="taskDate">Date</label>
+            <input class="form-input" type="date" id="taskDate" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="taskNotes">Notes (optional)</label>
+          <textarea class="form-input form-textarea" id="taskNotes" placeholder="Any additional notes..."></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-ghost" id="cancelTaskBtn">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="saveTaskBtn">Save Task</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ─── Goal Edit Modal ─── -->
+  <div class="modal-overlay" id="goalModal" role="dialog" aria-modal="true" aria-labelledby="goalModalTitle">
+    <div class="modal modal-sm">
+      <div class="modal-header">
+        <h2 class="modal-title" id="goalModalTitle">Set Daily Goal</h2>
+        <button class="modal-close" id="goalModalClose" aria-label="Close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label" for="goalInput">Target Completion %</label>
+          <input class="form-input" type="number" id="goalInput" min="1" max="100" value="80" />
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-ghost" id="cancelGoalBtn">Cancel</button>
+          <button class="btn btn-primary" id="saveGoalBtn">Save Goal</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Toast Notification ─── -->
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
