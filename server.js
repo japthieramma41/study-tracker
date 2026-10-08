@@ -22,7 +22,7 @@ app.use(cors());
 app.use(express.json());
 
 // Serve frontend static files
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(_dirname));
 
 /* ─── Auth Middleware ─── */
 function requireAuth(req, res, next) {
