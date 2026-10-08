@@ -238,7 +238,7 @@ app.post('/api/focus-sessions', requireAuth, (req, res) => {
    CATCH-ALL → serve frontend
 ════════════════════════════════════════════ */
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname,'index.html'));
 });
 
 /* ─── Start Server ─── */
